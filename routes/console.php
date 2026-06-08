@@ -10,4 +10,4 @@ Artisan::command('inspire', function () {
 
 
 
-Schedule::command('reservations:update-status')->everyFiveMinutes();
+Schedule::command('reservations:update-status')->everyMinute();

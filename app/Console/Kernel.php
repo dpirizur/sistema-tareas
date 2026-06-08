@@ -23,7 +23,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // 2. Programamos el comando usando su firma (signature)
-        $schedule->command('reservations:update-status')->everyFiveMinutes();
+        $schedule->command('reservations:update-status')->everyMinute();
 
         // Alternativa usando directamente la clase:
         // $schedule->command(\App\Console\Commands\UpdateExpiredReservations::class)->everyFiveMinutes();
