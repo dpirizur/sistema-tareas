@@ -36,8 +36,8 @@ class MakeReservation extends Component
         $isOccupied = Reservation::where('resource_id', $this->resource_id)
             ->where(function ($query) {
                 $query->where('start_time', '<', $this->end_time)
-                      ->where('end_time', '>', $this->start_time)
-                      ->where('status', 'reservado'); // Solo consideramos las reservas activas
+                    ->where('end_time', '>', $this->start_time)
+                    ->where('status', 'reservado'); // Solo consideramos las reservas activas
             })
             ->exists();
 
@@ -66,7 +66,14 @@ class MakeReservation extends Component
             // Pasamos la lista de recursos creados por el Seeder para el desplegable del formulario
             'resources' => Resource::all(),
             // Pasamos las reservas actuales del usuario para listarlas abajo
-            'myReservations' => Reservation::where('user_id', Auth::id())->where('start_time', '>', now())->with('resource')->latest()->get(),
+            'myReservations' => Reservation::where('user_id', Auth::id())
+                ->where(function ($query) {
+                    $query->where('start_time', '>', now()) // No han empezado (Futuras)
+                        ->orWhere('end_time', '>', now()); // Empezaron pero no han terminado (En curso)
+                })
+                ->with('resource')
+                ->latest()
+                ->get(),
 
             'myReservationsOld' => Reservation::where('user_id', Auth::id())->where('end_time', '<', now())->with('resource')->latest()->get()
         ]);
