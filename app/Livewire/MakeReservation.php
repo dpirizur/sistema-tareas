@@ -67,6 +67,7 @@ class MakeReservation extends Component
             'resources' => Resource::all(),
             // Pasamos las reservas actuales del usuario para listarlas abajo
             'myReservations' => Reservation::where('user_id', Auth::id())
+                ->where('status', '!=', 'cancelado')
                 ->where(function ($query) {
                     $query->where('start_time', '>', now()) // No han empezado (Futuras)
                         ->orWhere('end_time', '>', now()); // Empezaron pero no han terminado (En curso)
@@ -75,7 +76,9 @@ class MakeReservation extends Component
                 ->latest()
                 ->get(),
 
-            'myReservationsOld' => Reservation::where('user_id', Auth::id())->where('end_time', '<', now())->with('resource')->latest()->get()
+            'myReservationsCanceladas' => Reservation::where('user_id', Auth::id())->where('status', 'cancelado')->with('resource')->latest()->get(),
+
+            'myReservationsOld' => Reservation::where('user_id', Auth::id())->where('status', '!=', 'cancelado')->where('end_time', '<', now())->with('resource')->latest()->get()
         ]);
     }
 
